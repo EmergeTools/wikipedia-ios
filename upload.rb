@@ -19,6 +19,6 @@ end
 data = {"filename": "Wikipedia.xcarchive.zip", "repoName": "wikipedia-ios", "buildType": "main", "sha": "3845715a3be9876974345da41a0e0fb0500c53a0"}
 token = IO.read(File.expand_path("~/api_token")).chomp
 url = "https://api.emergetools.com/upload"
-url, _ = sh!(%W[curl --request POST --url #{url} --header #{'Accept: application/json'} --header #{'Content-Type: application/json'} --header #{"X-API-Token: #{token}"} --data #{data.to_json}], get_output: true)
-puts url
-sh!(%W[curl -v -H #{'Content-Type: application/zip'} -T Wikipedia.xcarchive.zip])
+result_json, _ = sh!(%W[curl --request POST --url #{url} --header #{'Accept: application/json'} --header #{'Content-Type: application/json'} --header #{"X-API-Token: #{token}"} --data #{data.to_json}], get_output: true)
+url = JSON.parse(result_json)['uploadURL']
+sh!(%W[curl -H #{'Content-Type: application/zip'} -T Wikipedia.xcarchive.zip #{url}])
